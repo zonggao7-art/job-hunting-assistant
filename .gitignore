@@ -1,0 +1,27 @@
+# 采集器产生的数据与浏览器配置（含个人登录态，切勿提交）
+collector/chrome_profile/
+collector/boss_jobs/
+collector/_state.json
+**/chrome_profile/
+**/boss_jobs/
+**/_state.json
+
+# 个人文件，防止误提交简历
+*.key
+resume*.pdf
+简历*.pdf
+简历*.txt
+个人*.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

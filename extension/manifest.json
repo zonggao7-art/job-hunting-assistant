@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "JD岗位分析助手",
+  "version": "1.6.0",
+  "description": "侧边栏一键分析当前 Boss直聘岗位页，输出匹配结论/简历修改点/开场白/面试题；支持上传简历、多供应商模型",
+  "permissions": ["sidePanel", "activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": [
+    "https://www.zhipin.com/*",
+    "https://*.zhipin.com/*",
+    "https://open.bigmodel.cn/*",
+    "https://api.deepseek.com/*",
+    "https://dashscope.aliyuncs.com/*",
+    "https://api.moonshot.cn/*",
+    "https://api.siliconflow.cn/*"
+  ],
+  "optional_host_permissions": ["https://*/*"],
+  "web_accessible_resources": [
+    { "resources": ["pdf.worker.min.js"], "matches": ["https://www.zhipin.com/*"] }
+  ],
+  "action": {
+    "default_title": "打开 JD 分析侧边栏"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

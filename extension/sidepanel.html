@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    margin: 0; padding: 12px; font-size: 13px; line-height: 1.6;
+    color: #1f2328; background: #fff;
+  }
+  h1 { font-size: 15px; margin: 0 0 10px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tab {
+    flex: 1; text-align: center; padding: 6px 0; border-radius: 6px;
+    border: 1px solid #d0d7de; cursor: pointer; font-size: 12.5px; color: #555;
+    background: #f6f8fa; user-select: none;
+  }
+  .tab.active { background: #0d8a72; color: #fff; border-color: #0d8a72; font-weight: 600; }
+  .row { display: flex; gap: 8px; margin-bottom: 10px; }
+  input[type=text], input[type=password] {
+    flex: 1; padding: 6px 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 12px;
+  }
+  button {
+    padding: 7px 14px; border: none; border-radius: 6px; cursor: pointer;
+    background: #0d8a72; color: #fff; font-size: 13px; font-weight: 600;
+  }
+  button:hover { background: #0b7561; }
+  button:disabled { background: #9fc9c0; cursor: wait; }
+  #copyBtn { background: #6b7280; }
+  #copyBtn:hover { background: #555c66; }
+  #status { font-size: 12px; color: #6b7280; margin: 8px 0; min-height: 18px; }
+  .result {
+    white-space: pre-wrap; word-break: break-word;
+    border: 1px solid #e4e7eb; border-radius: 8px; padding: 10px;
+    background: #fafbfc; font-size: 12.5px; display: none;
+  }
+  .hint { font-size: 11.5px; color: #8b949e; }
+  textarea {
+    width: 100%; height: 150px; padding: 6px 8px; border: 1px solid #d0d7de;
+    border-radius: 6px; font-size: 12px; line-height: 1.5; resize: vertical;
+    font-family: inherit; color: #1f2328;
+  }
+  a { color: #0d8a72; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <h1>JD 岗位分析 & 回复助手 <span style="font-size:10px;color:#8b949e">v1.6</span></h1>
+
+  <div class="tabs">
+    <div class="tab active" id="tabAnalyze">岗位分析</div>
+    <div class="tab" id="tabReply">回复助手</div>
+    <div class="tab" id="tabSettings">设置</div>
+  </div>
+
+  <!-- 岗位分析模式 -->
+  <div id="modeAnalyze">
+    <div class="row">
+      <button id="analyze">分析当前岗位页</button>
+      <button id="copyBtn" style="display:none">复制结果</button>
+    </div>
+    <div id="status">打开一个 Boss直聘岗位详情页，点上面的按钮即可。</div>
+    <div id="result" class="result"></div>
+  </div>
+
+  <!-- 回复助手模式 -->
+  <div id="modeReply" class="hidden">
+    <div class="row">
+      <button id="genReply">抓取对话并生成回复</button>
+      <button id="copyBtn2" style="display:none">复制结果</button>
+      <button id="dbg" style="background:#6b7280;font-weight:400;font-size:12px;padding:7px 10px">诊断</button>
+    </div>
+    <div id="status2">打开和 HR 的聊天页，点上面的按钮。只生成草稿，发送由你决定。</div>
+    <div id="result2" class="result"></div>
+  </div>
+
+  <!-- 设置模式 -->
+  <div id="modeSettings" class="hidden">
+    <div class="row">
+      <select id="provSel" style="flex:1;padding:6px;border:1px solid #d0d7de;border-radius:6px;font-size:12px;background:#fff;"></select>
+    </div>
+    <div class="hint" id="provHint" style="margin:-4px 0 8px;"></div>
+    <div class="row"><input type="text" id="cfgBase" placeholder="API 地址（Base URL，OpenAI 兼容）"></div>
+    <div class="row"><input type="password" id="cfgKey" placeholder="API Key（只存本机浏览器）"></div>
+    <div class="row"><input type="text" id="cfgText" placeholder="文本模型（岗位分析 / 回复草稿）"></div>
+    <div class="row"><input type="text" id="cfgVision" placeholder="视觉模型（截图兜底用，可留空）"></div>
+    <div class="row">
+      <button id="saveCfg">保存设置</button>
+      <button id="testCfg" style="background:#6b7280">测试连通</button>
+    </div>
+    <div id="status3">默认用智谱免费模型，你原有的 Key 会自动迁移；想换供应商就选预设、填对应 Key。</div>
+
+    <hr style="border:none;border-top:1px solid #e4e7eb;margin:14px 0 10px;">
+    <div class="hint" style="font-weight:600;color:#1f2328;font-size:12.5px;margin-bottom:6px;">简历（分析依据）</div>
+    <div class="row">
+      <button id="resumeFileBtn">上传简历文件</button>
+      <input type="file" id="resumeFile" accept=".pdf,.docx,.txt,.md" style="display:none">
+      <button id="resumeAiBtn" style="background:#6b7280">AI 提炼成画像</button>
+    </div>
+    <textarea id="resumeText" placeholder="上传 PDF / Word / txt 后这里会显示解析出的文字；也可以直接粘贴或修改。"></textarea>
+    <div class="row" style="margin-top:8px;">
+      <button id="resumeSave">保存简历</button>
+      <button id="resumeReset" style="background:#6b7280">恢复默认</button>
+    </div>
+    <div id="status4">当前使用内置示例画像（虚构）。请上传你自己的简历，之后所有分析都以它为准。</div>
+  </div>
+
+  <p class="hint">岗位页文字抓不到时自动改用截屏+视觉模型（需在「设置」里配了视觉模型）。配置只存本机，只有 JD/对话内容会发给所选模型供应商。</p>
+  <script src="pdf.min.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
